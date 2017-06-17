@@ -1,4 +1,4 @@
-# Serialization Manager [![Build Status](https://travis-ci.org/samcarpentier/serialization-manager.svg?branch=master)](https://travis-ci.org/samcarpentier/serialization-manager)
+# Serialization Manager [![Build Status](https://travis-ci.org/samcarpentier/serializer.svg?branch=master)](https://travis-ci.org/samcarpentier/serializer)
 
 
 
