@@ -1,5 +1,7 @@
-# Serialization Manager [![Build Status](https://travis-ci.org/samcarpentier/serializer.svg?branch=master)](https://travis-ci.org/samcarpentier/serializer)
+# Persistence [![Build Status](https://travis-ci.org/samcarpentier/serializer.svg?branch=master)](https://travis-ci.org/samcarpentier/serializer)
 
+My personal persistence library (in development). Will include : 
 
-
-A small part of my personnal persistence library (in development).
+* Serialization manager
+* Custom file-output database system
+* Data abstraction layer
