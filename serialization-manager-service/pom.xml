@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>persistence</groupId>
-		<artifactId>serializer</artifactId>
+		<artifactId>persistence</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>serialization-manager-service</artifactId>
