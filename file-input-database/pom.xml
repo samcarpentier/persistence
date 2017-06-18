@@ -9,6 +9,12 @@
 	<artifactId>file-input-database</artifactId>
 
 	<dependencies>
+		<dependency>
+			<groupId>persistence</groupId>
+			<artifactId>serialization-manager-service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Testing dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
