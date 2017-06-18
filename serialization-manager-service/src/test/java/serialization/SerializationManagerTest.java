@@ -3,54 +3,44 @@ package serialization;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import serialization.codec.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SerializationManagerTest {
 
-	private SerializationManager objectSerializer;
+  private SerializationManager serializationManager;
+  private JsonObject json;
 
-	@Mock
-	private CodecRegistrar codecRegistrar;
+  @Mock
+  private Codec codec;
+  @Mock
+  private TestClass object;
 
-	@Mock
-	private GenericCodec<SerializableObject> codec;
-	@Mock
-	private JsonElement serializedObject;
-	@Mock
-	private SerializableObject object;
+  @Before
+  public void setUp() {
+    this.serializationManager = new SerializationManager(codec);
+  }
 
-	@Before
-	public void setUp() {
-		doReturn(codec).when(codecRegistrar).getCodec(Mockito.any(Class.class));
-		this.objectSerializer = new SerializationManager(codecRegistrar);
-	}
+  @Test
+  public void givenObject_whenSerialize_thenFindCodecAndReturnSerializedObject() throws Exception {
+    given(codec.toJson(object)).willReturn(json);
+    JsonObject serializedObject = serializationManager.serialize(object);
+    assertThat(serializedObject, is(json));
+  }
 
-	@Test
-	public void givenObject_whenSerialize_thenFindCodecAndReturnSerializedObject() {
-		given(codec.serialize(object, null, null)).willReturn(serializedObject);
-
-		JsonElement json = objectSerializer.serialize(object);
-
-		assertThat(json, is(serializedObject));
-	}
-
-	@Test
-	public void givenJsonAndClass_whenDeserialize_thenFindCodecAndReturnDeserializedObject() {
-		given(codec.deserialize(serializedObject, null, null)).willReturn(object);
-
-		SerializableObject deserializedObject = objectSerializer.deserialize(serializedObject, SerializableObject.class);
-
-		assertThat(deserializedObject, is(object));
-	}
+  @Test
+  public void givenJsonAndClass_whenDeserialize_thenFindCodecAndReturnDeserializedObject() {
+    given(codec.fromJson(json, TestClass.class)).willReturn(object);
+    TestClass deserializedObject = (TestClass) codec.fromJson(json, TestClass.class);
+    assertThat(deserializedObject, is(object));
+  }
 
 }

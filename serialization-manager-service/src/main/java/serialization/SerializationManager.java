@@ -1,28 +1,24 @@
 package serialization;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import serialization.codec.*;
+import serialization.codec.Codec;
+import serialization.exception.SerializationException;
 
 public class SerializationManager {
 
-	private CodecRegistrar codecRegistrar;
+  private Codec codec;
 
-	public SerializationManager(CodecRegistrar codecRegistrar) {
-		this.codecRegistrar = codecRegistrar;
-	}
+  public SerializationManager(Codec codec) {
+    this.codec = codec;
+  }
 
-	@SuppressWarnings("unchecked")
-	public JsonElement serialize(SerializableObject objectToSerialize) {
-		Class<?> clazz = objectToSerialize.getClass();
-		GenericCodec<SerializableObject> codec = (GenericCodec<SerializableObject>) codecRegistrar.getCodec(clazz);
-		return codec.serialize(objectToSerialize, null, null);
-	}
+  public JsonObject serialize(SerializableObject objectToSerialize) throws SerializationException {
+    return codec.toJson(objectToSerialize);
+  }
 
-	@SuppressWarnings("unchecked")
-	public SerializableObject deserialize(JsonElement objectToDeserialize, Class<SerializableObject> clazz) {
-		GenericCodec<SerializableObject> codec = (GenericCodec<SerializableObject>) codecRegistrar.getCodec(clazz);
-		return codec.deserialize(objectToDeserialize, null, null);
-	}
+  public SerializableObject deserialize(JsonObject objectToDeserialize, Class<? extends SerializableObject> clazz) {
+    return codec.fromJson(objectToDeserialize, clazz);
+  }
 
 }

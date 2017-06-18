@@ -1,5 +1,7 @@
 package serialization;
 
-public class SerializationManagerAbstractTest {
+public abstract class SerializationManagerAbstractTest {
+
+  // private CodecRegistrar codecRegistrar;
 
 }
