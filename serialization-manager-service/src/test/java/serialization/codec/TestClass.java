@@ -38,4 +38,9 @@ public class TestClass implements SerializableObject {
     this.val1 = val1;
   }
 
+  @Override
+  public String toString() {
+    return "TestClass [arg1=" + arg1 + ", arg2=" + arg2 + ", val1=" + val1 + "]";
+  }
+
 }

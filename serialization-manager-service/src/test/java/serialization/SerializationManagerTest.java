@@ -12,6 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.gson.JsonObject;
 
 import serialization.codec.*;
+import serialization.exception.DeserializationException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SerializationManagerTest {
@@ -37,9 +38,10 @@ public class SerializationManagerTest {
   }
 
   @Test
-  public void givenJsonAndClass_whenDeserialize_thenFindCodecAndReturnDeserializedObject() {
+  public void givenJsonAndClass_whenDeserialize_thenFindCodecAndReturnDeserializedObject()
+      throws DeserializationException {
     given(codec.fromJson(json, TestClass.class)).willReturn(object);
-    TestClass deserializedObject = (TestClass) codec.fromJson(json, TestClass.class);
+    TestClass deserializedObject = (TestClass) serializationManager.deserialize(json, TestClass.class);
     assertThat(deserializedObject, is(object));
   }
 

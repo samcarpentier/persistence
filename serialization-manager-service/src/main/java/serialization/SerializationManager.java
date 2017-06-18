@@ -3,7 +3,7 @@ package serialization;
 import com.google.gson.JsonObject;
 
 import serialization.codec.Codec;
-import serialization.exception.SerializationException;
+import serialization.exception.*;
 
 public class SerializationManager {
 
@@ -17,7 +17,8 @@ public class SerializationManager {
     return codec.toJson(objectToSerialize);
   }
 
-  public SerializableObject deserialize(JsonObject objectToDeserialize, Class<? extends SerializableObject> clazz) {
+  public SerializableObject deserialize(JsonObject objectToDeserialize, Class<? extends SerializableObject> clazz)
+      throws DeserializationException {
     return codec.fromJson(objectToDeserialize, clazz);
   }
 

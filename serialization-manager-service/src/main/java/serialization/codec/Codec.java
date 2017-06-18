@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import com.google.gson.*;
 
 import serialization.SerializableObject;
-import serialization.exception.SerializationException;
+import serialization.exception.*;
 import serialization.util.ObjectFormatProcessor;
 
 public class Codec {
@@ -18,7 +18,13 @@ public class Codec {
 
   public JsonObject toJson(SerializableObject objectToSerialize) throws SerializationException {
     Gson gson = new Gson();
-    JsonObject json = gson.toJsonTree(objectToSerialize).getAsJsonObject();
+    JsonObject json = null;
+
+    try {
+      json = gson.toJsonTree(objectToSerialize).getAsJsonObject();
+    } catch (Exception e) {
+      throw new SerializationException(String.format("The provided object cannot be serialized (%s).", e.getMessage()));
+    }
 
     Field idField = objectFormatProcessor.getIdField(objectToSerialize.getClass());
     json.addProperty("id", idField.getName());
@@ -26,11 +32,17 @@ public class Codec {
     return json;
   }
 
-  public SerializableObject fromJson(JsonObject objectToDeserialize, Class<? extends SerializableObject> clazz) {
+  public SerializableObject fromJson(JsonObject objectToDeserialize, Class<? extends SerializableObject> clazz)
+      throws DeserializationException {
     Gson gson = new Gson();
-    objectToDeserialize.remove("id");
 
-    return gson.fromJson(objectToDeserialize, clazz);
+    try {
+      objectToDeserialize.remove("id");
+      return gson.fromJson(objectToDeserialize, clazz);
+    } catch (Exception e) {
+      throw new DeserializationException(
+          String.format("The provided object cannot be deserialized (%s).", e.getMessage()));
+    }
   }
 
 }

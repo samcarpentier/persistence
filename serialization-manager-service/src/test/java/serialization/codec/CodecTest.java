@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.gson.JsonObject;
 
+import serialization.exception.*;
 import serialization.util.ObjectFormatProcessor;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,6 +41,12 @@ public class CodecTest {
     assertThat(serializedObject.get("arg2").getAsString(), is(VALUE_2));
   }
 
+  @Test(expected = SerializationException.class)
+  public void givenInvalidObject_whenToJson_thenThrowSerializationException() throws Exception {
+    codec.toJson(null);
+    fail("Expected SerializationException but was never thrown.");
+  }
+
   @Test
   public void givenJson_whenFromJson_thenReturnObjectCorrectlyFormatted() throws Exception {
     JsonObject serializedObject = codec.toJson(testClass);
@@ -50,4 +57,9 @@ public class CodecTest {
     assertThat(deserializedObject.getArg2(), is(VALUE_2));
   }
 
+  @Test(expected = DeserializationException.class)
+  public void givenInvalidJson_whenFromJson_thenThrowDeserializationException() throws DeserializationException {
+    codec.fromJson(null, TestClass.class);
+    fail("Expected DeserializationException but was never thrown.");
+  }
 }
