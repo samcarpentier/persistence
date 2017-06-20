@@ -1,13 +1,15 @@
-package model;
+package database.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-public class Database {
+public class Database implements Serializable {
+
+  private static final long serialVersionUID = 5712719555769453715L;
 
   private String name;
-  private String path;
   private Map<String, DatabaseCollection> collections = Maps.newHashMap();
 
   public String getName() {
@@ -16,14 +18,6 @@ public class Database {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
   }
 
   public Map<String, DatabaseCollection> getAllCollections() {
@@ -36,6 +30,10 @@ public class Database {
 
   public void setCollections(Map<String, DatabaseCollection> collections) {
     this.collections = collections;
+  }
+
+  public void addCollection(String collectionName, DatabaseCollection collection) {
+    this.collections.put(collectionName, collection);
   }
 
 }

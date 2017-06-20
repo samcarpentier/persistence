@@ -1,22 +1,16 @@
-package model;
+package database.model;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
-public class DatabaseCollection {
+public class DatabaseCollection implements Serializable {
 
-  private String name;
+  private static final long serialVersionUID = -6466603262313845430L;
+
   private Set<JsonObject> entries = Sets.newHashSet();
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public Set<JsonObject> getEntries() {
     return entries;
