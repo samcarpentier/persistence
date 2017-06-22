@@ -1,7 +1,7 @@
 package database.model;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.*;
 
 import com.google.common.collect.Maps;
 
@@ -24,16 +24,16 @@ public class Database implements Serializable {
     return collections;
   }
 
-  public DatabaseCollection getCollection(String collectionName) {
-    return collections.get(collectionName);
+  public Optional<DatabaseCollection> getCollection(String collectionName) {
+    return Optional.ofNullable(collections.get(collectionName));
   }
 
   public void setCollections(Map<String, DatabaseCollection> collections) {
     this.collections = collections;
   }
 
-  public void addCollection(String collectionName, DatabaseCollection collection) {
-    this.collections.put(collectionName, collection);
+  public void addCollection(String collectionName) {
+    this.collections.put(collectionName, new DatabaseCollection());
   }
 
 }

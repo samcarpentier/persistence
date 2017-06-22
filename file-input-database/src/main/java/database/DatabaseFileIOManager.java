@@ -6,14 +6,14 @@ import java.nio.file.Paths;
 import database.exception.*;
 import database.model.Database;
 
-public class FileInputOutputManager {
+public class DatabaseFileIOManager {
 
   private String path;
 
   private ObjectOutputStream objectOutputStream;
   private ObjectInputStream objectInputStream;
 
-  public FileInputOutputManager(String path) {
+  public DatabaseFileIOManager(String path) {
     this.path = path;
   }
 
@@ -44,7 +44,9 @@ public class FileInputOutputManager {
   }
 
   private String buildPathToDatabase(String path, String filename) {
-    return Paths.get(path, filename).toString();
+    String filenameWithExtension = filename.endsWith(".ser") ? filename : filename.concat(".ser");
+
+    return Paths.get(path, filenameWithExtension).toString();
   }
 
 }
