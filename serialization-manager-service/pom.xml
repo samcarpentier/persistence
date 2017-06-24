@@ -24,7 +24,11 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.5</version>
 		</dependency>
-
+		<dependency>
+			<groupId>persistence</groupId>
+			<artifactId>util-commons</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<!-- Testing dependencies -->
 		<dependency>

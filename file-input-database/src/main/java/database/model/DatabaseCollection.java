@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
 import database.exception.interaction.EntryNotFoundException;
-import serialization.SerializationManagerConstants;
+import util.commons.PersistenceConfig;
 
 public class DatabaseCollection implements Serializable {
 
@@ -30,12 +30,12 @@ public class DatabaseCollection implements Serializable {
   }
 
   public void removeEntryForId(String id) {
-    entries.removeIf(entry -> entry.get(SerializationManagerConstants.ID_FIELD_IDENTIFIER).getAsString() == id);
+    entries.removeIf(entry -> entry.get(PersistenceConfig.ID_FIELD_IDENTIFIER).getAsString() == id);
   }
 
   public JsonObject findEntryById(String id) throws EntryNotFoundException {
     for (JsonObject entry : entries) {
-      if (entry.get(SerializationManagerConstants.ID_FIELD_IDENTIFIER).getAsString() == id) {
+      if (entry.get(PersistenceConfig.ID_FIELD_IDENTIFIER).getAsString() == id) {
         return entry;
       }
     }

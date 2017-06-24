@@ -8,7 +8,7 @@ import org.junit.*;
 import com.google.gson.JsonObject;
 
 import database.exception.interaction.EntryNotFoundException;
-import serialization.SerializationManagerConstants;
+import util.commons.PersistenceConfig;
 
 public class DatabaseCollectionTest {
 
@@ -35,8 +35,8 @@ public class DatabaseCollectionTest {
   public void givenMultipleEntriesInCollection_whenRemoveEntryForId_thenOnlySpecifiedEntryIsRemoved() {
     JsonObject entry = new JsonObject();
     JsonObject otherEntry = new JsonObject();
-    entry.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, ID);
-    otherEntry.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, OTHER_ID);
+    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID);
+    otherEntry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, OTHER_ID);
     collection.addEntry(entry);
     collection.addEntry(otherEntry);
 
@@ -49,7 +49,7 @@ public class DatabaseCollectionTest {
   @Test
   public void givenEntryNotInCollection_whenRemoveEntryForId_thenNoEntryIsRemoved() {
     JsonObject entry = new JsonObject();
-    entry.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, ID);
+    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID);
     collection.addEntry(entry);
 
     collection.removeEntryForId(OTHER_ID);
@@ -60,7 +60,7 @@ public class DatabaseCollectionTest {
   @Test
   public void givenId_whenFindById_thenReturnEntryAssociatedWithId() throws Exception {
     JsonObject entry = new JsonObject();
-    entry.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, ID);
+    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID);
     collection.addEntry(entry);
 
     JsonObject retrievedEntry = collection.findEntryById(ID);

@@ -17,9 +17,10 @@ import com.google.gson.JsonObject;
 import database.model.*;
 import serialization.*;
 import serialization.annotation.Id;
+import util.commons.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DatabaseClientImplTest {
+public class FileIODatabaseClientTest {
 
   private static final String DATABASE_NAME = "databaseName";
   private static final String COLLECTION_NAME = "collectionName";
@@ -27,7 +28,7 @@ public class DatabaseClientImplTest {
   private static final String ID = "someId";
   private static final String OTHER_ID = "otherId";
 
-  private DatabaseClientImpl databaseClient;
+  private FileIODatabaseClient databaseClient;
 
   @Mock
   private DatabaseFileIOManager ioManager;
@@ -53,7 +54,7 @@ public class DatabaseClientImplTest {
     given(ioManager.loadFromFile(DATABASE_NAME)).willReturn(database);
     given(database.getCollection(COLLECTION_NAME)).willReturn(collection);
 
-    this.databaseClient = new DatabaseClientImpl(DATABASE_NAME, ioManager, serializationManager);
+    this.databaseClient = new FileIODatabaseClient(DATABASE_NAME, ioManager, serializationManager);
   }
 
   @Test

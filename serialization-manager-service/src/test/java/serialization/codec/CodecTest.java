@@ -9,9 +9,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.gson.JsonObject;
 
-import serialization.SerializationManagerConstants;
 import serialization.exception.*;
 import serialization.util.ObjectFormatProcessor;
+import util.commons.PersistenceConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CodecTest {
@@ -37,7 +37,7 @@ public class CodecTest {
   public void givenObject_whenToJson_thenReturnJsonObjectCorrectlyFormatted() throws Exception {
     JsonObject serializedObject = codec.toJson(testClass);
 
-    assertThat(serializedObject.get(SerializationManagerConstants.ID_FIELD_IDENTIFIER).getAsString(), is("arg1"));
+    assertThat(serializedObject.get(PersistenceConfig.ID_FIELD_IDENTIFIER).getAsString(), is("arg1"));
     assertThat(serializedObject.get("arg1").getAsString(), is(VALUE_1));
     assertThat(serializedObject.get("arg2").getAsString(), is(VALUE_2));
   }

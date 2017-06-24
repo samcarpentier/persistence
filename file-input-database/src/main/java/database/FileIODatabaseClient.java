@@ -10,15 +10,16 @@ import database.exception.interaction.*;
 import database.model.*;
 import serialization.*;
 import serialization.exception.*;
+import util.commons.*;
 
-public class DatabaseClientImpl implements DatabaseClient {
+public class FileIODatabaseClient implements DatabaseClient {
 
   private DatabaseFileIOManager ioManager;
   private SerializationManager serializationManager;
 
   private Database database;
 
-  public DatabaseClientImpl(String databaseName, DatabaseFileIOManager ioManager,
+  public FileIODatabaseClient(String databaseName, DatabaseFileIOManager ioManager,
       SerializationManager serializationManager) {
     this.ioManager = ioManager;
     this.serializationManager = serializationManager;
