@@ -2,14 +2,12 @@ package database;
 
 import java.util.Set;
 
-import database.exception.*;
+import database.exception.DatabaseSavingException;
 import database.exception.interaction.*;
 import serialization.SerializableObject;
 import serialization.exception.*;
 
 public interface DatabaseClient {
-
-  void openDatabase(String databaseName) throws DatabaseLoadingException;
 
   void closeDatabase() throws DatabaseSavingException;
 
@@ -17,11 +15,12 @@ public interface DatabaseClient {
 
   void save(SerializableObject entry, String collectionName) throws CollectionNotFoundException, SerializationException;
 
-  SerializableObject findById(String collectionName, String id, Class<? extends SerializableObject> clazz)
+  SerializableObject findById(String collectionName, Class<? extends SerializableObject> clazz, String id)
       throws CollectionNotFoundException, DeserializationException, EntryNotFoundException;
 
-  Set<SerializableObject> findByIds(String collectionName, String... ids);
+  Set<SerializableObject> findByIds(String collectionName, Class<? extends SerializableObject> clazz, String... ids)
+      throws CollectionNotFoundException, EntryNotFoundException, DeserializationException;
 
-  void remove(String collectionName, String id);
+  void remove(String collectionName, String id) throws CollectionNotFoundException;
 
 }

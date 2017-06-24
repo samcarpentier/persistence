@@ -32,14 +32,18 @@ public class DatabaseCollectionTest {
   }
 
   @Test
-  public void givenEntryInCollection_whenRemoveEntryForId_thenEntryIsRemoved() {
+  public void givenMultipleEntriesInCollection_whenRemoveEntryForId_thenOnlySpecifiedEntryIsRemoved() {
     JsonObject entry = new JsonObject();
+    JsonObject otherEntry = new JsonObject();
     entry.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, ID);
+    otherEntry.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, OTHER_ID);
     collection.addEntry(entry);
+    collection.addEntry(otherEntry);
 
     collection.removeEntryForId(ID);
 
-    assertThat(collection.getEntries(), is(empty()));
+    assertThat(collection.getEntries(), contains(otherEntry));
+    assertThat(collection.getEntries(), not(hasItem(entry)));
   }
 
   @Test
