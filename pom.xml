@@ -17,8 +17,8 @@
 	<modules>
 		<module>serialization-manager-service</module>
 		<module>serialization-manager-component-test</module>
-		<module>file-input-database</module>
-		<module>file-input-database-component-test</module>
+		<module>database-service</module>
+		<module>database-component-test</module>
     <module>util-commons</module>
   </modules>
 
