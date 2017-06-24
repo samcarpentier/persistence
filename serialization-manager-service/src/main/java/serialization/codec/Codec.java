@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 import com.google.gson.*;
 
-import serialization.SerializableObject;
+import serialization.*;
 import serialization.exception.*;
 import serialization.util.ObjectFormatProcessor;
 
@@ -27,7 +27,7 @@ public class Codec {
     }
 
     Field idField = objectFormatProcessor.getIdField(objectToSerialize.getClass());
-    json.addProperty("id", idField.getName());
+    json.addProperty(SerializationManagerConstants.ID_FIELD_IDENTIFIER, idField.getName());
 
     return json;
   }
@@ -37,7 +37,7 @@ public class Codec {
     Gson gson = new Gson();
 
     try {
-      objectToDeserialize.remove("id");
+      objectToDeserialize.remove(SerializationManagerConstants.ID_FIELD_IDENTIFIER);
       return gson.fromJson(objectToDeserialize, clazz);
     } catch (Exception e) {
       throw new DeserializationException(

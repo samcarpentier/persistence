@@ -26,7 +26,7 @@ public class DatabaseFileIOManagerTest {
   private Database inMemoryDatabase;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     inMemoryDatabase = new Database();
     inMemoryDatabase.setName(DATABASE_NAME);
     inMemoryDatabase.addCollection(COLLECTION_NAME);
@@ -53,8 +53,8 @@ public class DatabaseFileIOManagerTest {
     // then
     Database databaseInFile = readDatabaseFromFile();
     assertThat(databaseInFile.getName(), is(DATABASE_NAME));
-    assertThat(databaseInFile.getAllCollections().keySet(), contains(COLLECTION_NAME));
-    assertThat(databaseInFile.getAllCollections().entrySet(), hasSize(1));
+    assertThat(databaseInFile.getCollections().keySet(), contains(COLLECTION_NAME));
+    assertThat(databaseInFile.getCollections().entrySet(), hasSize(1));
   }
 
   @Test
@@ -79,8 +79,8 @@ public class DatabaseFileIOManagerTest {
 
     // then
     assertThat(databaseInFile.getName(), is(DATABASE_NAME));
-    assertThat(databaseInFile.getAllCollections().keySet(), contains(COLLECTION_NAME));
-    assertThat(databaseInFile.getAllCollections().entrySet(), hasSize(1));
+    assertThat(databaseInFile.getCollections().keySet(), contains(COLLECTION_NAME));
+    assertThat(databaseInFile.getCollections().entrySet(), hasSize(1));
   }
 
   private void givenDatabaseInFileWithFilename(String filename) throws Exception {

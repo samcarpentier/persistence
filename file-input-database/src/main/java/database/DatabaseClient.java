@@ -1,10 +1,11 @@
 package database;
 
-import com.google.gson.JsonObject;
+import java.util.Set;
 
 import database.exception.*;
-import database.exception.interaction.DuplicateCollectionException;
+import database.exception.interaction.*;
 import serialization.SerializableObject;
+import serialization.exception.*;
 
 public interface DatabaseClient {
 
@@ -14,12 +15,13 @@ public interface DatabaseClient {
 
   void createCollection(String collectionName) throws DuplicateCollectionException;
 
-  void save(SerializableObject entry);
+  void save(SerializableObject entry, String collectionName) throws CollectionNotFoundException, SerializationException;
 
-  JsonObject findById(String id);
+  SerializableObject findById(String collectionName, String id, Class<? extends SerializableObject> clazz)
+      throws CollectionNotFoundException, DeserializationException, EntryNotFoundException;
 
-  JsonObject findByIds(String... ids);
+  Set<SerializableObject> findByIds(String collectionName, String... ids);
 
-  void remove(String id);
+  void remove(String collectionName, String id);
 
 }
