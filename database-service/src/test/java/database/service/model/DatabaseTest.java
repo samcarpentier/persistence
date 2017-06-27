@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import database.service.exception.interaction.*;
-import database.service.model.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseTest {

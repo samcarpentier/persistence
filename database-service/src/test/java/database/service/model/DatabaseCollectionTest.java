@@ -7,14 +7,14 @@ import org.junit.*;
 
 import com.google.gson.JsonObject;
 
-import database.service.exception.interaction.EntryNotFoundException;
-import database.service.model.DatabaseCollection;
+import database.service.exception.interaction.*;
 import util.commons.PersistenceConfig;
 
 public class DatabaseCollectionTest {
 
   private static final String COLLECTION_NAME = "collectionName";
 
+  private static final String ID_FIELD = "idField";
   private static final String ID = "someId";
   private static final String OTHER_ID = "otherId";
 
@@ -26,18 +26,39 @@ public class DatabaseCollectionTest {
   }
 
   @Test
-  public void givenJsonObject_whenAddEntry_thenEntryIsAddedInCollection() {
-    JsonObject entry = new JsonObject();
+  public void givenJsonObject_whenAddEntry_thenEntryIsAddedInCollection() throws Exception {
+    JsonObject entry = givenDefaultEntry();
     collection.addEntry(entry);
     assertThat(collection.getEntries(), contains(entry));
   }
 
-  @Test
-  public void givenMultipleEntriesInCollection_whenRemoveEntryForId_thenOnlySpecifiedEntryIsRemoved() {
+  @Test(expected = DuplicateIdException.class)
+  public void givenEntryWithSameIdThanAlreadyExistingEntry_whenAddEntry_thenThrowNewDuplicateIdException()
+      throws Exception {
+    // given
     JsonObject entry = new JsonObject();
+    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID_FIELD);
+    entry.addProperty(ID_FIELD, ID);
+    collection.addEntry(entry);
+
+    JsonObject otherEntryWithSameId = new JsonObject();
+    otherEntryWithSameId.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID_FIELD);
+    otherEntryWithSameId.addProperty(ID_FIELD, ID);
+
+    // when
+    collection.addEntry(otherEntryWithSameId);
+
+    // then
+    fail("Expected DuplicateIdException but was never thrown.");
+  }
+
+  @Test
+  public void givenMultipleEntriesInCollection_whenRemoveEntryForId_thenOnlySpecifiedEntryIsRemoved() throws Exception {
+    JsonObject entry = givenDefaultEntry();
     JsonObject otherEntry = new JsonObject();
-    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID);
-    otherEntry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, OTHER_ID);
+    otherEntry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID_FIELD);
+    otherEntry.addProperty(ID_FIELD, OTHER_ID);
+
     collection.addEntry(entry);
     collection.addEntry(otherEntry);
 
@@ -48,9 +69,8 @@ public class DatabaseCollectionTest {
   }
 
   @Test
-  public void givenEntryNotInCollection_whenRemoveEntryForId_thenNoEntryIsRemoved() {
-    JsonObject entry = new JsonObject();
-    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID);
+  public void givenEntryNotInCollection_whenRemoveEntryForId_thenNoEntryIsRemoved() throws Exception {
+    JsonObject entry = givenDefaultEntry();
     collection.addEntry(entry);
 
     collection.removeEntryForId(OTHER_ID);
@@ -60,8 +80,7 @@ public class DatabaseCollectionTest {
 
   @Test
   public void givenId_whenFindById_thenReturnEntryAssociatedWithId() throws Exception {
-    JsonObject entry = new JsonObject();
-    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID);
+    JsonObject entry = givenDefaultEntry();
     collection.addEntry(entry);
 
     JsonObject retrievedEntry = collection.findEntryById(ID);
@@ -73,5 +92,14 @@ public class DatabaseCollectionTest {
   public void givenIdWithoutAssociatedEntry_whenFindById_thenThrowEntryNotFoundException() throws Exception {
     collection.findEntryById(ID);
     fail("Expected EntryNotFoundException but was never thrown.");
+  }
+
+  private JsonObject givenDefaultEntry() {
+    JsonObject entry = new JsonObject();
+
+    entry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, ID_FIELD);
+    entry.addProperty(ID_FIELD, ID);
+
+    return entry;
   }
 }

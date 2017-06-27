@@ -14,10 +14,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.gson.JsonObject;
 
-import database.service.*;
 import database.service.model.*;
 import serialization.manager.service.*;
 import serialization.manager.service.annotation.Id;
+import util.commons.PersistenceConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileIODatabaseClientTest {
@@ -31,7 +31,7 @@ public class FileIODatabaseClientTest {
   private FileIODatabaseClient databaseClient;
 
   @Mock
-  private DatabaseFileIOManager ioManager;
+  private FileIOManager ioManager;
   @Mock
   private SerializationManager serializationManager;
 
@@ -47,7 +47,9 @@ public class FileIODatabaseClientTest {
 
   @Before
   public void setUp() throws Exception {
+    serializedEntry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, "name");
     serializedEntry.addProperty("name", "value1");
+    otherSerializedEntry.addProperty(PersistenceConfig.ID_FIELD_IDENTIFIER, "name");
     otherSerializedEntry.addProperty("name", "value2");
 
     given(database.getName()).willReturn(DATABASE_NAME);
@@ -60,7 +62,7 @@ public class FileIODatabaseClientTest {
   @Test
   public void givenLoadedDatabase_whenCloseDatabase_thenWriteDatabaseUsingIOManager() throws Exception {
     databaseClient.closeDatabase();
-    verify(ioManager).writeToFile(database, DATABASE_NAME);
+    verify(ioManager).writeToFile(database);
   }
 
   @Test

@@ -1,15 +1,16 @@
 package database.component.test;
 
+import serialization.manager.service.SerializableObject;
 import serialization.manager.service.annotation.Id;
 
-public class MotorCycle {
+public class MotorCycle implements SerializableObject {
 
   @Id
   private String vin;
 
   private String make;
   private String model;
-  private int injectorSize;
+  private int displacement;
 
   public String getVin() {
     return vin;
@@ -35,12 +36,12 @@ public class MotorCycle {
     this.model = model;
   }
 
-  public int getInjectorSize() {
-    return injectorSize;
+  public int getDisplacement() {
+    return displacement;
   }
 
-  public void setInjectorSize(int injectorSize) {
-    this.injectorSize = injectorSize;
+  public void setDisplacement(int displacement) {
+    this.displacement = displacement;
   }
 
 }

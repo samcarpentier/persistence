@@ -1,18 +1,22 @@
 package database.service.model;
 
-import java.io.Serializable;
 import java.util.*;
 
 import com.google.common.collect.Maps;
 
 import database.service.exception.interaction.*;
+import serialization.manager.service.SerializableObject;
+import serialization.manager.service.annotation.Id;
 
-public class Database implements Serializable {
+public class Database implements SerializableObject {
 
-  private static final long serialVersionUID = 5712719555769453715L;
-
+  @Id
   private String name;
   private Map<String, DatabaseCollection> collections = Maps.newHashMap();
+
+  public Database() {
+    // For deserialization
+  }
 
   public String getName() {
     return name;
@@ -41,6 +45,10 @@ public class Database implements Serializable {
     }
 
     collections.put(collectionName, new DatabaseCollection(collectionName));
+  }
+
+  public void clearCollections() {
+    collections.clear();
   }
 
 }
