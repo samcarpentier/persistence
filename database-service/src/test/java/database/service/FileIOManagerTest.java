@@ -32,6 +32,12 @@ public class FileIOManagerTest {
   @Mock
   private Database database;
 
+  @BeforeClass
+  public static void deleteDatabaseFile() throws Exception {
+    Files.delete(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
+        DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
+  }
+
   @Before
   public void setUp() throws Exception {
     given(database.getName()).willReturn(DATABASE_NAME);

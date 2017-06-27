@@ -25,11 +25,10 @@ public class FileIOManager {
     JsonObject serializedDatabase = serializationManager.serialize(database);
 
     try {
-      Files.write(path,
-          serializedDatabase.toString().getBytes(),
-          StandardOpenOption.CREATE,
-          StandardOpenOption.TRUNCATE_EXISTING);
+      Files.createDirectories(path.getParent());
+      Files.write(path, serializedDatabase.toString().getBytes());
     } catch (IOException e) {
+      System.out.println(e.getMessage());
       throw new DatabaseSavingException(
           String.format("Cannot write database [%s] to file [%s].", database.getName(), path.toString()));
     }
