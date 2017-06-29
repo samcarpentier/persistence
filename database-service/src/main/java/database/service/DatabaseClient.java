@@ -2,14 +2,19 @@ package database.service;
 
 import java.util.Set;
 
-import database.service.exception.DatabaseSavingException;
+import database.service.exception.*;
 import database.service.exception.interaction.*;
 import serialization.manager.service.SerializableObject;
 import serialization.manager.service.exception.*;
 
 public interface DatabaseClient {
 
+  void openDatabase(String databaseName, boolean createIfAbsent)
+      throws DatabaseLoadingException, DeserializationException;
+
   void closeDatabase() throws DatabaseSavingException, SerializationException;
+
+  DatabaseStatus getDatabaseStatus();
 
   void createCollection(String collectionName) throws DuplicateCollectionException;
 

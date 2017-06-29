@@ -1,7 +1,6 @@
 package database.service;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
@@ -11,85 +10,97 @@ import database.service.exception.interaction.*;
 import database.service.model.*;
 import serialization.manager.service.*;
 import serialization.manager.service.exception.*;
-import util.commons.*;
+import util.commons.JsonObjectProvider;
 
 public class FileIODatabaseClient implements DatabaseClient {
-
-  private static final Logger logger = Logger.getLogger(FileIODatabaseClient.class.getName());
 
   private FileIOManager ioManager;
   private SerializationManager serializationManager;
 
   private Database database;
 
-  public FileIODatabaseClient(String databaseName, FileIOManager ioManager, SerializationManager serializationManager) {
+  public FileIODatabaseClient(String databaseName, FileIOManager ioManager, SerializationManager serializationManager)
+      throws DatabaseLoadingException, DeserializationException {
     this.ioManager = ioManager;
     this.serializationManager = serializationManager;
-    this.database = resolveDatabase(databaseName);
+    openDatabase(databaseName, true);
   }
 
-  private Database resolveDatabase(String databaseName) {
+  @Override
+  public void openDatabase(String databaseName, boolean createIfAbsent)
+      throws DatabaseLoadingException, DeserializationException {
     try {
-      Database loadedDatabase = ioManager.loadFromFile(databaseName);
-      logger.info(String.format("Loaded database [%s] from file.", databaseName));
-
-      return loadedDatabase;
+      this.database = ioManager.loadFromFile(databaseName);
     } catch (DatabaseLoadingException | DeserializationException e) {
-      logger.info(String.format("No existing database found for name [%s]. Creating new instance.", databaseName));
-      Database database = new Database();
-      database.setName(databaseName);
-
-      return database;
+      if (createIfAbsent) {
+        this.database = createDatabase(databaseName);
+      } else {
+        throw e;
+      }
     }
+  }
+
+  private Database createDatabase(String databaseName) {
+    Database database = new Database();
+    database.setName(databaseName);
+
+    return database;
   }
 
   @Override
   public void closeDatabase() throws DatabaseSavingException, SerializationException {
+    verifyOperationIsAllowed();
+
     ioManager.writeToFile(database);
+    this.database = null;
+  }
+
+  @Override
+  public DatabaseStatus getDatabaseStatus() {
+    if (database == null) {
+      return DatabaseStatus.CLOSED;
+    }
+
+    return DatabaseStatus.OPENED;
   }
 
   @Override
   public void createCollection(String collectionName) throws DuplicateCollectionException {
+    verifyOperationIsAllowed();
+
     database.addCollection(collectionName);
-    logger.info(String.format("Successfully created collection [%s].", collectionName));
   }
 
   @Override
   public void save(SerializableObject entry, String collectionName)
       throws CollectionNotFoundException, SerializationException, DuplicateIdException {
+    verifyOperationIsAllowed();
+
     DatabaseCollection collection = database.getCollection(collectionName);
-
     JsonObject collectionEntry = serializationManager.serialize(entry);
-    collection.addEntry(collectionEntry);
 
-    logger.info(String.format("Successfully saved [%s] with ID [%s] in collection [%s]",
-        entry.getClass().getName(),
-        collectionEntry.get(collectionEntry.get(PersistenceConfig.ID_FIELD_IDENTIFIER).getAsString()),
-        collectionName));
+    collection.addEntry(collectionEntry);
   }
 
   @Override
   public SerializableObject findById(String collectionName, Class<? extends SerializableObject> clazz, String id)
       throws CollectionNotFoundException, EntryNotFoundException, DeserializationException {
-    System.out.println(database.getCollection(collectionName).getEntries());
+    verifyOperationIsAllowed();
 
     DatabaseCollection collection = database.getCollection(collectionName);
-
-    logger.info(String.format("Attempting to retrieve [%s] with ID [%s] in collection [%s]",
-        clazz.getName(),
-        id,
-        collectionName));
-
     JsonObject desiredEntry = JsonObjectProvider.copy(collection.findEntryById(id));
+
     return serializationManager.deserialize(desiredEntry, clazz);
   }
 
   @Override
   public Set<SerializableObject> findByIds(String collectionName, Class<? extends SerializableObject> clazz,
       String... ids) throws EntryNotFoundException, CollectionNotFoundException, DeserializationException {
-    DatabaseCollection collection = database.getCollection(collectionName);
+    verifyOperationIsAllowed();
 
+    DatabaseCollection collection = database.getCollection(collectionName);
     Set<SerializableObject> desiredEntries = Sets.newHashSet();
+
     for (String id : ids) {
       JsonObject entry = JsonObjectProvider.copy(collection.findEntryById(id));
       desiredEntries.add(serializationManager.deserialize(entry, clazz));
@@ -100,13 +111,23 @@ public class FileIODatabaseClient implements DatabaseClient {
 
   @Override
   public void remove(String collectionName, String id) throws CollectionNotFoundException {
+    verifyOperationIsAllowed();
+
     DatabaseCollection collection = database.getCollection(collectionName);
     collection.removeEntryForId(id);
   }
 
   @Override
   public void clearCollections() {
+    verifyOperationIsAllowed();
+
     database.clearCollections();
+  }
+
+  private void verifyOperationIsAllowed() {
+    if (database == null) {
+      throw new ClosedDatabaseException("No database is currently opened in the client. Operation unavailable");
+    }
   }
 
 }

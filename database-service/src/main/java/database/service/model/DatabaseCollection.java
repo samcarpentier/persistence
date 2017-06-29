@@ -42,8 +42,6 @@ public class DatabaseCollection implements SerializableObject {
   }
 
   public JsonObject findEntryById(String id) throws EntryNotFoundException {
-    System.out.println("AAA: " + entries);
-
     for (JsonObject entry : entries) {
       String idFieldValue = getIdFieldValue(entry);
       if (idFieldValue.equals(id)) {

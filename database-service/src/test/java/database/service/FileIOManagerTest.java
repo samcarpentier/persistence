@@ -34,8 +34,12 @@ public class FileIOManagerTest {
 
   @BeforeClass
   public static void deleteDatabaseFile() throws Exception {
-    Files.delete(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
-        DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
+    try {
+      Files.delete(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
+          DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
+    } catch (NoSuchFileException e) {
+      // Do nothing, files are already absent.
+    }
   }
 
   @Before

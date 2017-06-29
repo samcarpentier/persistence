@@ -12,6 +12,8 @@ import com.google.common.collect.Lists;
 
 import database.service.*;
 import database.service.exception.interaction.*;
+import database.service.factory.*;
+import serialization.manager.service.SerializationManagerFactory;
 import util.commons.*;
 
 public class FileIODatabaseTest {
@@ -25,15 +27,15 @@ public class FileIODatabaseTest {
   private static final String MODEL = "Hayabusa";
   private static final int DISPLACEMENT = 1340;
 
-  private static DatabaseClientFactory databaseClientFactory;
+  private static DatabaseClientAbstractFactory<FileIODatabaseClient> databaseClientFactory;
   private static DatabaseClient databaseClient;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
     deleteDatabaseFile();
 
-    databaseClientFactory = new DatabaseClientFactory();
-    databaseClient = databaseClientFactory.createClient(DatabaseType.FILE_IO_DB, DATABASE_NAME);
+    databaseClientFactory = new FileIODatabaseClientFactory(new SerializationManagerFactory().create());
+    databaseClient = databaseClientFactory.create(DATABASE_NAME).getProxiedClient();
   }
 
   private static void deleteDatabaseFile() throws Exception {
@@ -43,8 +45,14 @@ public class FileIODatabaseTest {
 
   @Before
   public void setUp() throws Exception {
-    databaseClient.clearCollections();
-    databaseClient.createCollection(COLLECTION_NAME);
+
+    if (databaseClient.getDatabaseStatus() != DatabaseStatus.CLOSED) {
+      databaseClient.clearCollections();
+      databaseClient.createCollection(COLLECTION_NAME);
+    } else {
+      databaseClient.openDatabase(DATABASE_NAME, false);
+      setUp();
+    }
   }
 
   @Test
@@ -160,7 +168,7 @@ public class FileIODatabaseTest {
     databaseClient.closeDatabase();
 
     // then
-    DatabaseClient otherClient = databaseClientFactory.createClient(DatabaseType.FILE_IO_DB, DATABASE_NAME);
+    DatabaseClient otherClient = databaseClientFactory.create(DATABASE_NAME).getProxiedClient();
     otherClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
   }
 

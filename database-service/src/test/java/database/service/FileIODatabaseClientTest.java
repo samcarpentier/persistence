@@ -14,15 +14,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.gson.JsonObject;
 
+import database.service.exception.*;
 import database.service.model.*;
 import serialization.manager.service.*;
 import serialization.manager.service.annotation.Id;
-import util.commons.PersistenceConfig;
+import util.commons.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileIODatabaseClientTest {
 
   private static final String DATABASE_NAME = "databaseName";
+  private static final String OTHER_DATABASE_NAME = "otherDatabaseName";
   private static final String COLLECTION_NAME = "collectionName";
 
   private static final String ID = "someId";
@@ -60,9 +62,50 @@ public class FileIODatabaseClientTest {
   }
 
   @Test
+  public void givenDoNotCreateIfAbsent_whenOpenDatabase_thenLoadDatabaseFromFile() throws Exception {
+    given(ioManager.loadFromFile(OTHER_DATABASE_NAME)).willReturn(database);
+    databaseClient.openDatabase(OTHER_DATABASE_NAME, false);
+    verify(ioManager).loadFromFile(OTHER_DATABASE_NAME);
+  }
+
+  @Test
+  public void givenCreateIfAbsent_whenOpenDatabase_thenLoadFromFile() throws Exception {
+    given(ioManager.loadFromFile(OTHER_DATABASE_NAME)).willReturn(database);
+    databaseClient.openDatabase(OTHER_DATABASE_NAME, true);
+    verify(ioManager).loadFromFile(OTHER_DATABASE_NAME);
+  }
+
+  @Test
+  public void givenCreateIfAbsentAndDatabaseLoadingException_whenOpenDatabase_createDatabase() throws Exception {
+    given(ioManager.loadFromFile(OTHER_DATABASE_NAME)).willThrow(new DatabaseLoadingException(null));
+    databaseClient.openDatabase(OTHER_DATABASE_NAME, true);
+    // then no exception
+  }
+
+  @Test(expected = DatabaseLoadingException.class)
+  public void givenDoNotCreateIfAbsentAndException_whenOpenDatabase_thenThrowException() throws Exception {
+    given(ioManager.loadFromFile(OTHER_DATABASE_NAME)).willThrow(new DatabaseLoadingException(null));
+    databaseClient.openDatabase(OTHER_DATABASE_NAME, false);
+    Assertions.expect(DatabaseLoadingException.class);
+  }
+
+  @Test
   public void givenLoadedDatabase_whenCloseDatabase_thenWriteDatabaseUsingIOManager() throws Exception {
     databaseClient.closeDatabase();
     verify(ioManager).writeToFile(database);
+  }
+
+  @Test
+  public void givenOpenedDatabase_whenGetDatabaseStatus_thenReturnOpenedStatus() {
+    DatabaseStatus status = databaseClient.getDatabaseStatus();
+    assertThat(status, is(DatabaseStatus.OPENED));
+  }
+
+  @Test
+  public void givenClosedDatabase_whenGetDatabaseStatus_thenReturnClosedStatus() throws Exception {
+    databaseClient.closeDatabase();
+    DatabaseStatus status = databaseClient.getDatabaseStatus();
+    assertThat(status, is(DatabaseStatus.CLOSED));
   }
 
   @Test
@@ -114,13 +157,90 @@ public class FileIODatabaseClientTest {
     verify(collection).removeEntryForId(ID);
   }
 
-  protected class Dummy implements SerializableObject {
+  @Test
+  public void givenClosedDatabase_whenOpenDatabase_thenDatabaseIsReOpened() throws Exception {
+    databaseClient.closeDatabase();
+    databaseClient.openDatabase(DATABASE_NAME, true);
+    // then no exception
+  }
+
+  @Test
+  public void givenClosedDatabase_whenAnyOperationExceptOpenDatabase_thenThrowClosedDatabaseException()
+      throws Exception {
+    // given
+    databaseClient.closeDatabase();
+
+    // when, then
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.closeDatabase();
+      }
+    });
+
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.createCollection(COLLECTION_NAME);
+      }
+    });
+
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.save(serializableObject, COLLECTION_NAME);
+      }
+    });
+
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.findById(COLLECTION_NAME, SerializableObject.class, ID);
+      }
+    });
+
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.findByIds(COLLECTION_NAME, SerializableObject.class, OTHER_ID);
+      }
+    });
+
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.remove(COLLECTION_NAME, ID);
+      }
+    });
+
+    assertThatClosedDatabaseExceptionIsThrownWhen(new CallBack() {
+      @Override
+      public void callback() throws Exception {
+        databaseClient.clearCollections();
+      }
+    });
+  }
+
+  private void assertThatClosedDatabaseExceptionIsThrownWhen(CallBack callback) throws Exception {
+    try {
+      callback.callback();
+      Assertions.expect(ClosedDatabaseException.class);
+    } catch (ClosedDatabaseException e) {
+      // Do nothing
+    }
+  }
+
+  class Dummy implements SerializableObject {
     @Id
     String arg1;
     String arg2;
 
     public Dummy() {
     }
+  }
+
+  interface CallBack {
+    void callback() throws Exception;
   }
 
 }
