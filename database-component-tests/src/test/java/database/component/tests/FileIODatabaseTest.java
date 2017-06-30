@@ -1,9 +1,8 @@
-package database.component.test;
+package database.component.tests;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.nio.file.*;
 import java.util.Set;
 
 import org.junit.*;
@@ -33,7 +32,7 @@ public class FileIODatabaseTest {
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    deleteDatabaseFile();
+    TestUtils.cleanupDatabaseFiles(DATABASE_NAME);
 
     databaseClientFactory = new FileIODatabaseClientFactory(new SerializationManagerFactory().create());
     databaseClient = databaseClientFactory.create(DATABASE_NAME).getProxiedClient();
@@ -42,14 +41,7 @@ public class FileIODatabaseTest {
 
   @AfterClass
   public static void afterClass() throws Exception {
-    deleteDatabaseFile();
-  }
-
-  private static void deleteDatabaseFile() throws Exception {
-    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
-        DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
-
-    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION));
+    TestUtils.cleanupDatabaseFiles(DATABASE_NAME);
   }
 
   @Before
@@ -88,7 +80,7 @@ public class FileIODatabaseTest {
     databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
 
     // then
-    Assertions.expect(DuplicateIdException.class);
+    TestUtils.expect(DuplicateIdException.class);
   }
 
   @Test
@@ -146,7 +138,7 @@ public class FileIODatabaseTest {
 
     // then
     databaseClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
-    Assertions.expect(EntryNotFoundException.class);
+    TestUtils.expect(EntryNotFoundException.class);
   }
 
   @Test

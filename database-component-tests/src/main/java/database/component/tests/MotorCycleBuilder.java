@@ -1,4 +1,4 @@
-package database.component.test;
+package database.component.tests;
 
 public class MotorCycleBuilder {
 

@@ -6,7 +6,7 @@
 		<artifactId>persistence</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>database-component-test</artifactId>
+	<artifactId>database-component-tests</artifactId>
 
 	<dependencies>
 		<dependency>

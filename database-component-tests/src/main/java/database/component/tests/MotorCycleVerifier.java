@@ -1,4 +1,4 @@
-package database.component.test;
+package database.component.tests;
 
 import static org.junit.Assert.*;
 

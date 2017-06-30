@@ -6,7 +6,7 @@
 		<artifactId>persistence</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>serialization-manager-component-test</artifactId>
+	<artifactId>serialization-manager-component-tests</artifactId>
 
 	<dependencies>
 		<dependency>

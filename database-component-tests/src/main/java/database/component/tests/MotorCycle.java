@@ -1,4 +1,4 @@
-package database.component.test;
+package database.component.tests;
 
 import serialization.manager.service.SerializableObject;
 import serialization.manager.service.annotation.Id;

@@ -12,7 +12,7 @@ import database.service.*;
 import database.service.exception.*;
 import serialization.manager.service.SerializationManager;
 import serialization.manager.service.exception.DeserializationException;
-import util.commons.Assertions;
+import util.commons.TestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileIODatabaseClientFactoryTest {
@@ -56,7 +56,7 @@ public class FileIODatabaseClientFactoryTest {
     clientFactory.create(DATABASE_NAME);
 
     // then
-    Assertions.expect(DatabaseClientInstantiationException.class);
+    TestUtils.expect(DatabaseClientInstantiationException.class);
   }
 
   @Test(expected = DatabaseClientInstantiationException.class)
@@ -72,7 +72,7 @@ public class FileIODatabaseClientFactoryTest {
     clientFactory.create(DATABASE_NAME);
 
     // then
-    Assertions.expect(DatabaseClientInstantiationException.class);
+    TestUtils.expect(DatabaseClientInstantiationException.class);
   }
 
   @Test
@@ -102,7 +102,7 @@ public class FileIODatabaseClientFactoryTest {
     clientFactory.getClient();
 
     // then
-    Assertions.expect(DatabaseClientInstantiationException.class);
+    TestUtils.expect(DatabaseClientInstantiationException.class);
   }
 
   @Test
@@ -132,7 +132,7 @@ public class FileIODatabaseClientFactoryTest {
     clientFactory.getProxiedClient();
 
     // then
-    Assertions.expect(DatabaseClientInstantiationException.class);
+    TestUtils.expect(DatabaseClientInstantiationException.class);
   }
 
 }

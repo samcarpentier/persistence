@@ -16,9 +16,9 @@
 	</properties>
 	<modules>
 		<module>serialization-manager-service</module>
-		<module>serialization-manager-component-test</module>
+		<module>serialization-manager-component-tests</module>
 		<module>database-service</module>
-		<module>database-component-test</module>
+		<module>database-component-tests</module>
     <module>util-commons</module>
   </modules>
 

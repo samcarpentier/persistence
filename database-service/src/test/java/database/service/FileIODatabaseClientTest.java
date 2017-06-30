@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
-import java.nio.file.*;
 import java.util.Set;
 
 import org.junit.*;
@@ -50,10 +49,8 @@ public class FileIODatabaseClientTest {
 
   @AfterClass
   public static void afterClass() throws Exception {
-    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
-        DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
-
-    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION));
+    TestUtils.cleanupDatabaseFiles(DATABASE_NAME);
+    TestUtils.cleanupDatabaseFiles(OTHER_DATABASE_NAME);
   }
 
   @Before
@@ -95,7 +92,7 @@ public class FileIODatabaseClientTest {
   public void givenDoNotCreateIfAbsentAndException_whenOpenDatabase_thenThrowException() throws Exception {
     given(ioManager.loadFromFile(OTHER_DATABASE_NAME)).willThrow(new DatabaseLoadingException(null));
     databaseClient.openDatabase(OTHER_DATABASE_NAME, false);
-    Assertions.expect(DatabaseLoadingException.class);
+    TestUtils.expect(DatabaseLoadingException.class);
   }
 
   @Test
@@ -230,10 +227,16 @@ public class FileIODatabaseClientTest {
     });
   }
 
+  @Test
+  public void whenClearCollections_thenClearCollectionsInDatabase() {
+    databaseClient.clearCollections();
+    verify(database).clearCollections();
+  }
+
   private void assertThatClosedDatabaseExceptionIsThrownWhen(CallBack callback) throws Exception {
     try {
       callback.callback();
-      Assertions.expect(ClosedDatabaseException.class);
+      TestUtils.expect(ClosedDatabaseException.class);
     } catch (ClosedDatabaseException e) {
       // Do nothing
     }

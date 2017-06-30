@@ -21,4 +21,5 @@ public abstract class DatabaseClientAbstractFactory<T extends DatabaseClient> {
   public abstract DatabaseClient getProxiedClient();
 
   protected abstract T instantiate(String databaseName) throws DatabaseLoadingException, DeserializationException;
+
 }
