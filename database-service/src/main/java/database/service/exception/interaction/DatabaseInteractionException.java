@@ -1,4 +1,4 @@
-package database.service.exception;
+package database.service.exception.interaction;
 
 public abstract class DatabaseInteractionException extends Exception {
 

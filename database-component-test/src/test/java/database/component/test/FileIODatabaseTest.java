@@ -45,7 +45,6 @@ public class FileIODatabaseTest {
 
   @Before
   public void setUp() throws Exception {
-
     if (databaseClient.getDatabaseStatus() != DatabaseStatus.CLOSED) {
       databaseClient.clearCollections();
       databaseClient.createCollection(COLLECTION_NAME);
@@ -58,10 +57,9 @@ public class FileIODatabaseTest {
   @Test
   public void givenNoObjectInDatabase_whenSave_thenObjectIsInDatabase() throws Exception {
     // given
-    MotorCycle motorCycle = givenMotorCycle(VIN);
-
-    // when
-    databaseClient.save(motorCycle, COLLECTION_NAME);
+    databaseClient.save(
+        new MotorCycleBuilder().withVin(VIN).withMake(MAKE).withModel(MODEL).withDisplacement(DISPLACEMENT).build(),
+        COLLECTION_NAME);
 
     // then
     MotorCycle retrievedMotorCycle = (MotorCycle) databaseClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
@@ -75,12 +73,10 @@ public class FileIODatabaseTest {
   @Test(expected = DuplicateIdException.class)
   public void givenObjectInDatabase_whenSaveObjectWithSameId_thenThrowDuplicateIdException() throws Exception {
     // given
-    MotorCycle motorCycle = givenMotorCycle(VIN);
-    MotorCycle motorCycleWithSameId = givenMotorCycle(VIN);
-    databaseClient.save(motorCycle, COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
 
     // when
-    databaseClient.save(motorCycleWithSameId, COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
 
     // then
     Assertions.expect(DuplicateIdException.class);
@@ -89,10 +85,8 @@ public class FileIODatabaseTest {
   @Test
   public void givenMultipleObjectsInDatabase_whenFindById_thenReturnObjectAssociatedWithId() throws Exception {
     // given
-    MotorCycle motorCycle = givenMotorCycle(VIN);
-    MotorCycle otherMotorCycle = givenMotorCycle(OTHER_VIN);
-    databaseClient.save(motorCycle, COLLECTION_NAME);
-    databaseClient.save(otherMotorCycle, COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(OTHER_VIN).build(), COLLECTION_NAME);
 
     // when
     MotorCycle retrievedMotorCycle = (MotorCycle) databaseClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
@@ -105,10 +99,8 @@ public class FileIODatabaseTest {
   @Test
   public void givenMultipleObjectsInDatabase_whenFindByIds_thenReturnAllObjectsAssociatedWithIds() throws Exception {
     // given
-    MotorCycle motorCycle = givenMotorCycle(VIN);
-    MotorCycle otherMotorCycle = givenMotorCycle(OTHER_VIN);
-    databaseClient.save(motorCycle, COLLECTION_NAME);
-    databaseClient.save(otherMotorCycle, COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(OTHER_VIN).build(), COLLECTION_NAME);
 
     // when
     Set<MotorCycle> retrievedMotorCycles = (Set) databaseClient.findByIds(COLLECTION_NAME,
@@ -117,24 +109,15 @@ public class FileIODatabaseTest {
         OTHER_VIN);
 
     // then
-    retrievedMotorCycles.forEach(retrievedMotorCycle -> {
-      assertThat(retrievedMotorCycle.getVin(), isIn(Lists.newArrayList(VIN, OTHER_VIN)));
-
-      new MotorCycleVerifier(retrievedMotorCycle)
-          .assertThatMake(is(MAKE))
-          .assertThatModel(is(MODEL))
-          .assertThatDisplacement(is(DISPLACEMENT));
-    });
+    retrievedMotorCycles.forEach(
+        retrievedMotorCycle -> assertThat(retrievedMotorCycle.getVin(), isIn(Lists.newArrayList(VIN, OTHER_VIN))));
   }
 
-  @Test(expected = EntryNotFoundException.class)
-  public void givenMultipleObjectsInDatabase_whenRemove_thenObjectAssociatedWithIdIsRemovedAndOthersAreUntouched()
-      throws Exception {
+  @Test
+  public void givenMultipleObjectsInDatabase_whenRemove_thenObjectNotAssociatedWithIdAreUntouched() throws Exception {
     // given
-    MotorCycle motorCycle = givenMotorCycle(VIN);
-    MotorCycle otherMotorCycle = givenMotorCycle(OTHER_VIN);
-    databaseClient.save(motorCycle, COLLECTION_NAME);
-    databaseClient.save(otherMotorCycle, COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(OTHER_VIN).build(), COLLECTION_NAME);
 
     // when
     databaseClient.remove(COLLECTION_NAME, VIN);
@@ -144,7 +127,18 @@ public class FileIODatabaseTest {
         MotorCycle.class,
         OTHER_VIN);
     assertThat(retrievedOtherMotorCycle, is(not(nullValue())));
+  }
 
+  @Test(expected = EntryNotFoundException.class)
+  public void givenMultipleObjectsInDatabase_whenRemove_thenObjectAssociatedWithIdIsRemoved() throws Exception {
+    // given
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(OTHER_VIN).build(), COLLECTION_NAME);
+
+    // when
+    databaseClient.remove(COLLECTION_NAME, VIN);
+
+    // then
     databaseClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
     Assertions.expect(EntryNotFoundException.class);
   }
@@ -169,7 +163,8 @@ public class FileIODatabaseTest {
 
     // then
     DatabaseClient otherClient = databaseClientFactory.create(DATABASE_NAME).getProxiedClient();
-    otherClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
+    MotorCycle retrievedMotorCycle = (MotorCycle) otherClient.findById(COLLECTION_NAME, MotorCycle.class, VIN);
+    new MotorCycleVerifier(retrievedMotorCycle).assertThatVin(is(VIN));
   }
 
   private MotorCycle givenMotorCycle(String vin) {
