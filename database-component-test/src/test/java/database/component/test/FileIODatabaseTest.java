@@ -40,9 +40,16 @@ public class FileIODatabaseTest {
     serializableObjectConverter = new ObjectConverter<>();
   }
 
+  @AfterClass
+  public static void afterClass() throws Exception {
+    deleteDatabaseFile();
+  }
+
   private static void deleteDatabaseFile() throws Exception {
     Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
         DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
+
+    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION));
   }
 
   @Before

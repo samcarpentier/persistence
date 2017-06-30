@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.nio.file.*;
 import java.util.Set;
 
 import org.junit.*;
@@ -46,6 +47,14 @@ public class FileIODatabaseClientTest {
 
   private JsonObject serializedEntry = new JsonObject();
   private JsonObject otherSerializedEntry = new JsonObject();
+
+  @AfterClass
+  public static void afterClass() throws Exception {
+    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION,
+        DATABASE_NAME + PersistenceConfig.SERIALIZED_FILE_EXTENSION));
+
+    Files.deleteIfExists(Paths.get(PersistenceConfig.DEFAULT_DATABASE_LOCATION));
+  }
 
   @Before
   public void setUp() throws Exception {
