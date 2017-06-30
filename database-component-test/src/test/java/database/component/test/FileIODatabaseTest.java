@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import database.service.*;
 import database.service.exception.interaction.*;
 import database.service.factory.*;
-import serialization.manager.service.SerializationManagerFactory;
+import serialization.manager.service.*;
 import util.commons.*;
 
 public class FileIODatabaseTest {
@@ -29,6 +29,7 @@ public class FileIODatabaseTest {
 
   private static DatabaseClientAbstractFactory<FileIODatabaseClient> databaseClientFactory;
   private static DatabaseClient databaseClient;
+  private static ObjectConverter<MotorCycle, SerializableObject> serializableObjectConverter;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
@@ -36,6 +37,7 @@ public class FileIODatabaseTest {
 
     databaseClientFactory = new FileIODatabaseClientFactory(new SerializationManagerFactory().create());
     databaseClient = databaseClientFactory.create(DATABASE_NAME).getProxiedClient();
+    serializableObjectConverter = new ObjectConverter<>();
   }
 
   private static void deleteDatabaseFile() throws Exception {
@@ -95,7 +97,6 @@ public class FileIODatabaseTest {
     new MotorCycleVerifier(retrievedMotorCycle).assertThatVin(is(VIN));
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Test
   public void givenMultipleObjectsInDatabase_whenFindByIds_thenReturnAllObjectsAssociatedWithIds() throws Exception {
     // given
@@ -103,10 +104,8 @@ public class FileIODatabaseTest {
     databaseClient.save(new MotorCycleBuilder().withVin(OTHER_VIN).build(), COLLECTION_NAME);
 
     // when
-    Set<MotorCycle> retrievedMotorCycles = (Set) databaseClient.findByIds(COLLECTION_NAME,
-        MotorCycle.class,
-        VIN,
-        OTHER_VIN);
+    Set<MotorCycle> retrievedMotorCycles = serializableObjectConverter
+        .convertAll(databaseClient.findByIds(COLLECTION_NAME, MotorCycle.class, VIN, OTHER_VIN));
 
     // then
     retrievedMotorCycles.forEach(
@@ -155,8 +154,7 @@ public class FileIODatabaseTest {
   public void givenPopulatedDatabase_whenCloseDatabaseThenReopenDatabase_thenContentOfDatabaseIsPreserved()
       throws Exception {
     // given
-    MotorCycle motorCycle = givenMotorCycle(VIN);
-    databaseClient.save(motorCycle, COLLECTION_NAME);
+    databaseClient.save(new MotorCycleBuilder().withVin(VIN).build(), COLLECTION_NAME);
 
     // when
     databaseClient.closeDatabase();
@@ -167,14 +165,4 @@ public class FileIODatabaseTest {
     new MotorCycleVerifier(retrievedMotorCycle).assertThatVin(is(VIN));
   }
 
-  private MotorCycle givenMotorCycle(String vin) {
-    MotorCycle motorCycle = new MotorCycle();
-
-    motorCycle.setVin(vin);
-    motorCycle.setMake(MAKE);
-    motorCycle.setModel(MODEL);
-    motorCycle.setDisplacement(DISPLACEMENT);
-
-    return motorCycle;
-  }
 }
