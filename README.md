@@ -2,6 +2,7 @@
 
 My personal persistence library (in development). Will include : 
 
-* Serialization manager
+* Serialization module
 * Custom file-output database system
+* Mongo database client adaptation
 * Data abstraction layer
