@@ -85,10 +85,4 @@ public class MongoDatabaseClientTest {
     TestUtils.expect(DuplicateCollectionException.class);
   }
 
-  @Test
-  public void whenClearCollections_thenDropDatabase() {
-    databaseClient.clearCollections();
-    verify(database).drop();
-  }
-
 }

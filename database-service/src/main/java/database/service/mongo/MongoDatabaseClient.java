@@ -2,8 +2,10 @@ package database.service.mongo;
 
 import java.util.Set;
 
+import org.bson.Document;
+
 import com.mongodb.*;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 
 import database.service.*;
 import database.service.exception.interaction.*;
@@ -76,7 +78,10 @@ public class MongoDatabaseClient implements DatabaseClient {
 
   @Override
   public void clearCollections() {
-    database.drop();
+    for (String collectionName : database.listCollectionNames()) {
+      MongoCollection<Document> collection = database.getCollection(collectionName);
+      collection.drop();
+    }
   }
 
   // For testing purposes
