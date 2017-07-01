@@ -1,4 +1,4 @@
-package database.service.model;
+package database.service.fileio.model;
 
 import java.util.Set;
 

@@ -1,7 +1,6 @@
-package database.service.factory;
+package database.service;
 
-import database.service.DatabaseClient;
-import database.service.exception.DatabaseLoadingException;
+import database.service.fileio.exception.DatabaseLoadingException;
 import serialization.manager.service.SerializationManager;
 import serialization.manager.service.exception.DeserializationException;
 

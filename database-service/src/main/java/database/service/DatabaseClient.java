@@ -4,6 +4,7 @@ import java.util.Set;
 
 import database.service.exception.*;
 import database.service.exception.interaction.*;
+import database.service.fileio.exception.*;
 import serialization.manager.service.SerializableObject;
 import serialization.manager.service.exception.*;
 

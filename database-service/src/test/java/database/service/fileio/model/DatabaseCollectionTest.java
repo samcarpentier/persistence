@@ -1,4 +1,4 @@
-package database.service.model;
+package database.service.fileio.model;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -8,6 +8,7 @@ import org.junit.*;
 import com.google.gson.JsonObject;
 
 import database.service.exception.interaction.*;
+import database.service.fileio.model.DatabaseCollection;
 import util.commons.PersistenceConfig;
 
 public class DatabaseCollectionTest {

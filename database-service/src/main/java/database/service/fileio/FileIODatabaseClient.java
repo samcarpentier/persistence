@@ -1,13 +1,15 @@
-package database.service;
+package database.service.fileio;
 
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
+import database.service.*;
 import database.service.exception.*;
 import database.service.exception.interaction.*;
-import database.service.model.*;
+import database.service.fileio.exception.*;
+import database.service.fileio.model.*;
 import serialization.manager.service.*;
 import serialization.manager.service.exception.*;
 import util.commons.JsonObjectProvider;

@@ -1,4 +1,4 @@
-package database.service;
+package database.service.fileio;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -14,6 +14,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
 
+import database.service.*;
+import database.service.fileio.*;
 import serialization.manager.service.SerializableObject;
 
 @RunWith(MockitoJUnitRunner.class)

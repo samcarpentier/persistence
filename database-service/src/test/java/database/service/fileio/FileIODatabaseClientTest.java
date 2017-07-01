@@ -1,4 +1,4 @@
-package database.service;
+package database.service.fileio;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -14,8 +14,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.gson.JsonObject;
 
+import database.service.*;
 import database.service.exception.*;
-import database.service.model.*;
+import database.service.fileio.*;
+import database.service.fileio.exception.DatabaseLoadingException;
+import database.service.fileio.model.*;
 import serialization.manager.service.*;
 import serialization.manager.service.annotation.Id;
 import util.commons.*;

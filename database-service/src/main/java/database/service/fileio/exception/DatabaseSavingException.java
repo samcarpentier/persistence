@@ -1,4 +1,4 @@
-package database.service.exception;
+package database.service.fileio.exception;
 
 public class DatabaseSavingException extends Exception {
 

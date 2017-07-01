@@ -1,4 +1,4 @@
-package database.service;
+package database.service.fileio;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 import com.google.gson.JsonObject;
 
 import database.service.exception.*;
-import database.service.model.Database;
+import database.service.fileio.exception.*;
+import database.service.fileio.model.Database;
 import serialization.manager.service.SerializationManager;
 import serialization.manager.service.exception.*;
 import util.commons.*;
